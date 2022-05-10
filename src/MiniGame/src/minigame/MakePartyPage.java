@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class MakePartyPage extends PageManager{
+public class MakePartyPage extends ComponentManger{
 	TextField idText, ipText, portCText, portSText;
 	JButton participate, makeRoom;
 	JPanel grid_panel;
@@ -49,19 +49,19 @@ public class MakePartyPage extends PageManager{
         grid_panel.setBackground(Color.WHITE);
         grid_panel.setLayout(gBag);
         
-        gbinsert(id, 0, 0, 1, 1); 
-        gbinsert(participate, 0, 2, 1, 1);
-        gbinsert(makeRoom, 0, 4, 1, 1);
-		gbinsert(pnl, 1, 0, 1, 1); 
-		gbinsert(pnl, 1, 2, 1, 1); 
-		gbinsert(pnl, 1, 4, 1, 1);      
-        gbinsert(ip, 2, 2, 1, 1);    
-        gbinsert(portC, 2, 3, 1, 1);
-        gbinsert(portS, 2, 4, 1, 1);       
-        gbinsert(idText, 3, 0, 3, 1);
-        gbinsert(ipText, 3, 2, 3, 1);
-        gbinsert(portCText, 3, 3, 3, 1);
-        gbinsert(portSText, 3, 4, 3, 1);
+        gbinsert(grid_panel, id, 0, 0, 1, 1); 
+        gbinsert(grid_panel, participate, 0, 2, 1, 1);
+        gbinsert(grid_panel, makeRoom, 0, 4, 1, 1);
+		gbinsert(grid_panel, pnl, 1, 0, 1, 1); 
+		gbinsert(grid_panel, pnl, 1, 2, 1, 1); 
+		gbinsert(grid_panel, pnl, 1, 4, 1, 1);      
+        gbinsert(grid_panel, ip, 2, 2, 1, 1);    
+        gbinsert(grid_panel, portC, 2, 3, 1, 1);
+        gbinsert(grid_panel, portS, 2, 4, 1, 1);       
+        gbinsert(grid_panel, idText, 3, 0, 3, 1);
+        gbinsert(grid_panel, ipText, 3, 2, 3, 1);
+        gbinsert(grid_panel, portCText, 3, 3, 3, 1);
+        gbinsert(grid_panel, portSText, 3, 4, 3, 1);
         
         //add panel to frame
         add("Center", grid_panel);
@@ -73,64 +73,51 @@ public class MakePartyPage extends PageManager{
     	ActionListener listener = new ActionListener() {
     		@Override
         	public void actionPerformed(ActionEvent e) {
-    			if(participate.equals(e.getSource())) {
-    				String data1 = idText.getText();
-    				String data2 = ipText.getText();
-    				String data3 = portCText.getText();
-        			System.out.println(data1 + data2 + data3);
+    			if(participate.equals(e.getSource())) {	
+    				
+    				try {
+    					PageManager.page = 3;
+        				PageManager.portC = Integer.parseInt(portCText.getText());
+        				PageManager.ip = ipText.getText();
+        				PageManager.id = idText.getText();
+
+            			System.out.println(PageManager.id + PageManager.ip + PageManager.portC);
+            			setvisibility(false);
+    				}
+    				catch (Exception ex){
+    					//ex.printStackTrace();
+    					System.out.println("invalid value");
+    					PageManager.page = 2;
+    					PageManager.portC = 0;
+        				PageManager.ip = "";
+        				PageManager.id = "";
+    				}
+    				
     			}
     			
     			if(makeRoom.equals(e.getSource())) {
-    				String data1 = idText.getText();
-    				String data3 = portSText.getText();
-        			System.out.println(data1 + data3);
+    				try {
+    					PageManager.page = 3;
+        				PageManager.portS = Integer.parseInt(portSText.getText());
+        				PageManager.id = idText.getText();
+
+            			System.out.println(PageManager.id + PageManager.portS);
+            			setvisibility(false);
+    				}
+    				catch (Exception ex) {
+    					//ex.printStackTrace();
+    					System.out.println("invalid value");
+    					PageManager.page = 2;
+    					PageManager.portS = 0;
+        				PageManager.id = "";
+    				}
+    				
     			}
         	}
     	};
     	
     	participate.addActionListener(listener);
     	makeRoom.addActionListener(listener);
-    }
-    
-    private JLabel makeLabel(JLabel c, Font font, Color color, Dimension size) {
-    	if(font != null) c.setFont(font);
-    	if(color != null) c.setForeground(color);
-    	if(size != null) c.setPreferredSize(size);
-    	return c;
-    }
-    
-    private TextField makeTextField(TextField c, Font font, Color color, Dimension size) {
-    	if(font != null) c.setFont(font);
-    	if(color != null) c.setForeground(color);
-    	if(size != null) c.setPreferredSize(size);
-    	return c;
-    }
-    
-    private JButton makeJButton(JButton c, Font font, Color color, Color bcolor, Dimension size) {
-    	if(font != null) c.setFont(font);
-    	if(color != null) c.setForeground(color);
-    	if(bcolor != null) c.setBackground(bcolor);
-    	if(size != null) c.setPreferredSize(size);
-    	return c;
-    }
-    
-    private JPanel makeJPanel(JPanel c, Color bcolor, Dimension size) {
-    	if(bcolor != null) c.setBackground(bcolor);
-    	if(size != null) c.setPreferredSize(size);
-    	return c;
-    }
-   
-    private void gbinsert(Component c, int x, int y, int w, int h){
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill= GridBagConstraints.BOTH;
-        gbc.gridx = x;
-        gbc.gridy = y;
-        gbc.gridwidth = w;
-        gbc.gridheight = h;
-        gbc.insets = new Insets(10,10,10,10);
-        this.grid_panel.add(c, gbc);
-       
-       
     }
     
     public void setvisibility(boolean isvisible) {

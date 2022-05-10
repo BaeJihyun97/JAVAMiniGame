@@ -6,9 +6,12 @@ import javax.swing.JFrame;
 abstract class PageManager extends JFrame {
 	public static int page = 1; 
 	public static boolean finish = false;
+	public static int portC = 0, portS = 0;
+	public static String ip = "", id = "";
+	
 	
 	public PageManager() {
-		
+
 	}
 	
 	public int getPage() {
@@ -18,5 +21,7 @@ abstract class PageManager extends JFrame {
 	public void setPage(int page){
 		PageManager.page = page;
 	}
+	
+	
 
 }

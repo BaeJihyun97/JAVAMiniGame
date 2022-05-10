@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
-public class StartPage extends PageManager{
+public class StartPage extends ComponentManger{
 	JPanel main_panel;
 	JButton[] buttonArr = new JButton[3];
 
@@ -89,13 +89,6 @@ public class StartPage extends PageManager{
 
 	}
 
-	public ImageIcon imageSetSize(String path, int i, int j) { // image Size Setting
-		ImageIcon icon = new ImageIcon(path);
-		Image ximg = icon.getImage(); // ImageIcon을 Image로 변환.
-		Image yimg = ximg.getScaledInstance(i, j, java.awt.Image.SCALE_SMOOTH);
-		ImageIcon xyimg = new ImageIcon(yimg);
-		return xyimg;
-	}
 	
 	public void setvisibility(boolean isvisible) {
     	this.isvisible = isvisible;
