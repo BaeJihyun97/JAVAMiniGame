@@ -5,7 +5,8 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.Random;
 
-//¾ÆÁ÷ ¹Ì¿Ï. Å×½ºÆ®¿ë main ÇÔ¼öµµ µé¾î ÀÖÀ½.
+//í”Œë ˆì´ì–´ì˜ ì•„ì´ì½˜ì´ ì›€ì§ì´ì§€ ì•ŠëŠ” ë¬¸ì œ ìˆìŒ. CardLayoutì˜ í™”ë©´ì„ ë„˜ê¸¸ ë•Œë§ˆë‹¤ ì „ì²´ í™”ë©´ì´ ì´ˆê¸°í™”ë˜ëŠ” ë“¯í•¨.
+@SuppressWarnings("serial")
 public class Game1 extends PageManager{
 	final static int TRACK_NUM = 100;
 	Dimension dim = new Dimension(300,300);
@@ -23,6 +24,8 @@ public class Game1 extends PageManager{
 	JPanel[] pc = new JPanel[2];
 	int[] track = new int[TRACK_NUM];
 	JLabel[] tracks = new JLabel[TRACK_NUM];
+	JPanel[] board = new JPanel[6];
+	int a = 1;
 	
 	boolean isvisible;
 	public Game1() {
@@ -30,7 +33,6 @@ public class Game1 extends PageManager{
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setMinimumSize(new Dimension(1920, 1080));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setvisibility(true);
 		setFocusable(true);
 	
 		main = new JPanel();
@@ -59,38 +61,57 @@ public class Game1 extends PageManager{
 		}
 		
 		JPanel arrows = new JPanel();
-		arrows.setLayout(new GridBagLayout());
+		arrows.setLayout(new GridLayout());
 		arrows.setBackground(Color.WHITE);
 		Random random = new Random();
 		//random.setSeed(System.currentTimeMillis());
 		for(int i=0; i<TRACK_NUM; i++) {			
 			int rand = random.nextInt(4);
-			track[i] = rand + 37;			
-			if(i<6) {
-				tracks[i] = new JLabel(imageSetSize(arrow_img[rand],230,230));			
-				tracks[i].setPreferredSize(dim);
-				arrows.add(tracks[i],i);
-			}
-		}	
+			track[i] = rand + 37;
+		}
 		
+		CardLayout[] cards = new CardLayout[6];
+		for(int i=0; i<6; i++) {
+			CardLayout card = new CardLayout(0,0);
+			cards[i] = card;
+		}
+		
+		for(int j=0; j<6; j++) {
+			JPanel d = new JPanel();
+			d.setLayout(cards[j]);
+			d.setBackground(Color.WHITE);
+			for(int i=0; i<TRACK_NUM; i++) {					
+				tracks[i] = new JLabel(imageSetSize(arrow_img[track[i]-37],230,230));			
+				tracks[i].setPreferredSize(dim);
+				d.add(Integer.toString(i),tracks[i]);
+			}
+			board[j] = d;
+			cards[j].show(board[j],Integer.toString(j));
+			arrows.add(board[j]);
+		}	
 		
 			class key implements KeyListener{
 	
 				public void keyTyped(KeyEvent e) {
 				}
-				public void keyPressed(KeyEvent e) {					
+				public void keyPressed(KeyEvent e) {
 				}
 	
-				public void keyReleased(KeyEvent e) {
-					Point p = labels[3].getLocation();
-					Point p2 = arrows.getLocation();
+				public void keyReleased(KeyEvent e) {				
 					if(e.getKeyCode()==track[player.location]) {
+						Point p = labels[3].getLocation();
 						labels[3].setLocation(p.x+15,p.y);
-						arrows.setLocation(p2.x-300,p2.y);
+						for(int i=0; i<6; i++)
+							cards[i].show(board[i],Integer.toString(a+i));
+						a++;
 						player.Run();
+						if(!(player.running))
+							JOptionPane.showMessageDialog(null, "Win");
+						if(!(com.running))
+							JOptionPane.showMessageDialog(null, "Lose");
 					}
 					else {
-						try{Thread.sleep(1000);
+						try{Thread.sleep(300);
 						}catch(InterruptedException E) {
 							E.printStackTrace();
 						}
@@ -98,16 +119,11 @@ public class Game1 extends PageManager{
 				}
 					
 			}
-			
-		
+					
 			main.add(arrows);
 			add("Center",main);
 			addKeyListener(new key());
 
-	}
-	
-	public static void main(String args[]) {
-		Game1 run = new Game1();
 	}
 	
 	public void setvisibility(boolean isvisible) {
@@ -121,7 +137,7 @@ public class Game1 extends PageManager{
 	
 	public ImageIcon imageSetSize(String path, int i, int j) { // image Size Setting
 		ImageIcon icon = new ImageIcon(path);
-		Image ximg = icon.getImage(); // ImageIconÀ» Image·Î º¯È¯.
+		Image ximg = icon.getImage(); // ImageIconì„ Imageë¡œ ë³€í™˜.
 		Image yimg = ximg.getScaledInstance(i, j, java.awt.Image.SCALE_SMOOTH);
 		ImageIcon xyimg = new ImageIcon(yimg);
 		return xyimg;
