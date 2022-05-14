@@ -64,7 +64,7 @@ public class Game1 extends PageManager{
 		arrows.setLayout(new GridLayout());
 		arrows.setBackground(Color.WHITE);
 		Random random = new Random();
-		//random.setSeed(System.currentTimeMillis());
+		random.setSeed(System.currentTimeMillis());
 		for(int i=0; i<TRACK_NUM; i++) {			
 			int rand = random.nextInt(4);
 			track[i] = rand + 37;
@@ -79,8 +79,8 @@ public class Game1 extends PageManager{
 		for(int j=0; j<6; j++) {
 			JPanel d = new JPanel();
 			d.setLayout(cards[j]);
-			d.setBackground(Color.WHITE);
-			for(int i=0; i<TRACK_NUM; i++) {					
+			//d.setBackground(Color.WHITE);
+			for(int i=0; i<TRACK_NUM; i++) {				
 				tracks[i] = new JLabel(imageSetSize(arrow_img[track[i]-37],230,230));			
 				tracks[i].setPreferredSize(dim);
 				d.add(Integer.toString(i),tracks[i]);
@@ -89,6 +89,7 @@ public class Game1 extends PageManager{
 			cards[j].show(board[j],Integer.toString(j));
 			arrows.add(board[j]);
 		}	
+		main.add(arrows);
 		
 			class key implements KeyListener{
 	
@@ -101,9 +102,12 @@ public class Game1 extends PageManager{
 					if(e.getKeyCode()==track[player.location]) {
 						Point p = labels[3].getLocation();
 						labels[3].setLocation(p.x+15,p.y);
-						for(int i=0; i<6; i++)
-							cards[i].show(board[i],Integer.toString(a+i));
+						slide(board,a,cards);
 						a++;
+						if(a%10!=0) {
+							Point p2 = labels[1].getLocation();
+							labels[1].setLocation(p2.x+15,p2.y); com.Run();
+						}
 						player.Run();
 						if(!(player.running))
 							JOptionPane.showMessageDialog(null, "Win");
@@ -111,7 +115,8 @@ public class Game1 extends PageManager{
 							JOptionPane.showMessageDialog(null, "Lose");
 					}
 					else {
-						try{Thread.sleep(300);
+						try{Thread.sleep(300); Point p = labels[1].getLocation();
+						labels[1].setLocation(p.x+15,p.y); com.Run();
 						}catch(InterruptedException E) {
 							E.printStackTrace();
 						}
@@ -119,11 +124,9 @@ public class Game1 extends PageManager{
 				}
 					
 			}
-					
-			main.add(arrows);
-			add("Center",main);
-			addKeyListener(new key());
-
+						
+		add("Center",main);
+		addKeyListener(new key());
 	}
 	
 	public void setvisibility(boolean isvisible) {
@@ -143,5 +146,9 @@ public class Game1 extends PageManager{
 		return xyimg;
 	}
 	
+	public void slide(JPanel[] board, int a,CardLayout[] cards) {
+		for(int i=0; i<6; i++)
+			cards[i].show(board[i],Integer.toString(a+i));
+	}
 
 }
