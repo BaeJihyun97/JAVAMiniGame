@@ -128,24 +128,7 @@ public class Game1 extends PageManager{
 		add("Center",main);
 		addKeyListener(new key());
 	}
-	
-	public void setvisibility(boolean isvisible) {
-    	this.isvisible = isvisible;
-    	this.setVisible(isvisible);
-    }
-	
-	public boolean getvisibility() {
-		return this.isvisible;
-	}
-	
-	public ImageIcon imageSetSize(String path, int i, int j) { // image Size Setting
-		ImageIcon icon = new ImageIcon(path);
-		Image ximg = icon.getImage(); // ImageIcon을 Image로 변환.
-		Image yimg = ximg.getScaledInstance(i, j, java.awt.Image.SCALE_SMOOTH);
-		ImageIcon xyimg = new ImageIcon(yimg);
-		return xyimg;
-	}
-	
+		
 	public void slide(JPanel[] board, int a,CardLayout[] cards) {
 		for(int i=0; i<6; i++)
 			cards[i].show(board[i],Integer.toString(a+i));
