@@ -5,7 +5,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.Random;
 
-//플레이어의 아이콘이 움직이지 않는 문제 있음. CardLayout의 화면을 넘길 때마다 전체 화면이 초기화되는 듯함.
 @SuppressWarnings("serial")
 public class Game1 extends PageManager{
 	final static int TRACK_NUM = 100;
@@ -13,13 +12,14 @@ public class Game1 extends PageManager{
 	JPanel main;
 	Runners player = new Runners(TRACK_NUM);
 	Runners com = new Runners(TRACK_NUM);
+	Computer c = new Computer(com);
 	Runners[] r = {com,player};
-	String[] arrow_img = {"src\\minigame\\image\\arrowLEFT.png",
-			"src\\minigame\\image\\arrowUP.png",
-			"src\\minigame\\image\\arrowRIGHT.png",
-			"src\\minigame\\image\\arrowDOWN.png"};
-	String[] track_img = {"src\\minigame\\image\\run.png",
-			"src\\minigame\\image\\gofor.png"};
+	String[] arrow_img = {"./image/arrowLEFT.png",
+			"./image/arrowUP.png",
+			"./image/arrowRIGHT.png",
+			"./image/arrowDOWN.png"};
+	String[] track_img = {"./image/run.png",
+			"./image/gofor.png"};
 	JLabel[] labels = new JLabel[4];
 	JPanel[] pc = new JPanel[2];
 	int[] track = new int[TRACK_NUM];
@@ -34,10 +34,33 @@ public class Game1 extends PageManager{
 		setMinimumSize(new Dimension(1920, 1080));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setFocusable(true);
-	
+		
 		main = new JPanel();
-		main.setBackground(Color.BLACK);
-		main.setLayout(new GridLayout(3,1,10,1));
+		main.setBackground(Color.WHITE);
+		
+		JPanel r = new JPanel();
+		r.setBackground(Color.WHITE);
+		r.setLayout(new BorderLayout());
+		
+		JLabel ready = new JLabel("READY...");
+		ready.setFont(ready.getFont().deriveFont(150.0f));
+		ready.setForeground(Color.BLACK);
+		ready.setPreferredSize(new Dimension(800,1080));
+		r.add("Center",ready);
+		main.add(r);
+		add("Center",main);
+	}
+	
+	public void Start() {
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		main.removeAll();
+		main.setBackground(Color.WHITE);
+		main.setLayout(new GridLayout(3,1,10,0));
 		
 		for(int i=0; i<2; i++) {
 			String s = "";
@@ -68,70 +91,136 @@ public class Game1 extends PageManager{
 		for(int i=0; i<TRACK_NUM; i++) {			
 			int rand = random.nextInt(4);
 			track[i] = rand + 37;
-		}
-		
-		CardLayout[] cards = new CardLayout[6];
-		for(int i=0; i<6; i++) {
-			CardLayout card = new CardLayout(0,0);
-			cards[i] = card;
+			tracks[i] = new JLabel(imageSetSize(arrow_img[track[i]-37],230,230));			
+			tracks[i].setPreferredSize(dim);
 		}
 		
 		for(int j=0; j<6; j++) {
-			JPanel d = new JPanel();
-			d.setLayout(cards[j]);
-			//d.setBackground(Color.WHITE);
-			for(int i=0; i<TRACK_NUM; i++) {				
-				tracks[i] = new JLabel(imageSetSize(arrow_img[track[i]-37],230,230));			
-				tracks[i].setPreferredSize(dim);
-				d.add(Integer.toString(i),tracks[i]);
-			}
-			board[j] = d;
-			cards[j].show(board[j],Integer.toString(j));
+			board[j] = new JPanel();
+			board[j].add(tracks[j]);
 			arrows.add(board[j]);
 		}	
 		main.add(arrows);
-		
-			class key implements KeyListener{
-	
-				public void keyTyped(KeyEvent e) {
-				}
-				public void keyPressed(KeyEvent e) {
-				}
-	
-				public void keyReleased(KeyEvent e) {				
-					if(e.getKeyCode()==track[player.location]) {
-						Point p = labels[3].getLocation();
-						labels[3].setLocation(p.x+15,p.y);
-						slide(board,a,cards);
-						a++;
-						if(a%10!=0) {
-							Point p2 = labels[1].getLocation();
-							labels[1].setLocation(p2.x+15,p2.y); com.Run();
-						}
-						player.Run();
-						if(!(player.running))
-							JOptionPane.showMessageDialog(null, "Win");
-						if(!(com.running))
-							JOptionPane.showMessageDialog(null, "Lose");
-					}
-					else {
-						try{Thread.sleep(300); Point p = labels[1].getLocation();
-						labels[1].setLocation(p.x+15,p.y); com.Run();
-						}catch(InterruptedException E) {
-							E.printStackTrace();
-						}
-					}
-				}
-					
-			}
-						
+		main.revalidate();
 		add("Center",main);
+		this.RunGame();
+	}
+	
+	public void RunGame() {
+		c.start();
 		addKeyListener(new key());
 	}
+	
+	class key implements KeyListener{
 		
-	public void slide(JPanel[] board, int a,CardLayout[] cards) {
-		for(int i=0; i<6; i++)
-			cards[i].show(board[i],Integer.toString(a+i));
+		public void keyTyped(KeyEvent e) {
+		}
+		public void keyPressed(KeyEvent e) {
+		}
+
+		public void keyReleased(KeyEvent e) {				
+			if(e.getKeyCode()==track[player.location]) {
+				Player_move();
+				slide(board,a);
+				a++;					
+				if(!(player.running))
+					JOptionPane.showMessageDialog(null, "Win");
+					
+			}
+			else {
+				
+			}
+		}
+			
+	}
+	
+	public void setvisibility(boolean isvisible) {
+    	this.isvisible = isvisible;
+    	this.setVisible(isvisible);
+    }
+	
+	public boolean getvisibility() {
+		return this.isvisible;
+	}
+	
+	public ImageIcon imageSetSize(String path, int i, int j) { // image Size Setting
+		ImageIcon icon = new ImageIcon(path);
+		Image ximg = icon.getImage(); // ImageIcon을 Image로 변환.
+		Image yimg = ximg.getScaledInstance(i, j, java.awt.Image.SCALE_SMOOTH);
+		ImageIcon xyimg = new ImageIcon(yimg);
+		return xyimg;
+	}
+	
+	public void slide(JPanel[] board, int a) {
+		int k=6;
+		if(a>94)	k=100-a;
+		for(int i=0; i<k; i++) {
+			board[i].removeAll();
+			board[i].add(tracks[a+i]);
+			board[i].revalidate();
+			board[i].repaint();
+		}
+	}
+	
+	public void Player_move() {
+		pc[1].setLayout(null);
+		Point p = labels[3].getLocation();
+		pc[1].remove(1);
+		pc[1].add(labels[3]);
+		labels[3].setLocation(p.x+15,p.y);
+		pc[1].add(labels[2]);
+		pc[1].revalidate();
+		pc[1].repaint();
+		player.Run();
+	}
+	
+	public void Com_move() {
+		pc[0].setLayout(null);
+		Point p = labels[1].getLocation();
+		pc[0].remove(1);
+		pc[0].add(labels[1]);
+		labels[1].setLocation(p.x+15,p.y);
+		pc[0].add(labels[0]);
+		pc[0].revalidate();
+		pc[0].repaint();
+		com.Run();
+	}
+	
+	public class Computer implements Runnable{
+		private Thread t;
+		private String ThreadName = "com";
+		int location;
+		Computer(Runners com){
+			this.location = com.location;
+		}
+		
+		public void start() {
+			if(t==null) {
+				t = new Thread(this, ThreadName);
+				t.start();
+			}
+		}
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			while(true) {
+				try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Com_move();
+				if(!(com.running))	{
+					JOptionPane.showMessageDialog(null, "Lose");
+					System.out.println(com.location);
+					break;
+				}
+				if(!(player.running))
+					break;
+			}
+		}
+		
 	}
 
 }
