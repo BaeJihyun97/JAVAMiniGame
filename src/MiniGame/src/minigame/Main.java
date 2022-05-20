@@ -8,12 +8,17 @@ public class Main extends PageManager{
 		StartPage page1 = new StartPage();
 		MakePartyPage page2 = new MakePartyPage();
 		Wait page3 = new Wait();
+		Game1 page5 = new Game1();
 		
 		while(!finish) {
 			int pageN = PageManager.page;
 			
 			if(PageManager.page == 1) page1.setvisibility(true);
 			if(PageManager.page == 2) page2.setvisibility(true);
+			if(PageManager.page == 5) {
+				page5.setvisibility(true);
+				page5.Start();
+			}
 			if(PageManager.page == 3) {
 				page3.setvisibility(true);
 				
