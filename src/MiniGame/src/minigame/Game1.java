@@ -26,8 +26,9 @@ public class Game1 extends PageManager{
 	JLabel[] tracks = new JLabel[TRACK_NUM];
 	JPanel[] board = new JPanel[6];
 	int a = 1;
-	
 	boolean isvisible;
+	boolean finish = false;
+	
 	public Game1() {
 		setTitle("Game1");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -104,6 +105,9 @@ public class Game1 extends PageManager{
 		main.revalidate();
 		add("Center",main);
 		this.RunGame();
+
+		
+		
 	}
 	
 	public void RunGame() {
@@ -123,9 +127,12 @@ public class Game1 extends PageManager{
 				Player_move();
 				slide(board,a);
 				a++;					
-				if(!(player.running))
+				if(!(player.running)) {
 					JOptionPane.showMessageDialog(null, "Win");
-					
+					finish = true;
+					PageManager.page = 1;
+					setvisibility(false);
+				}
 			}
 			else {
 				
@@ -213,7 +220,9 @@ public class Game1 extends PageManager{
 				Com_move();
 				if(!(com.running))	{
 					JOptionPane.showMessageDialog(null, "Lose");
-					System.out.println(com.location);
+					finish = true;
+					PageManager.page = 1;
+					setvisibility(false);
 					break;
 				}
 				if(!(player.running))
