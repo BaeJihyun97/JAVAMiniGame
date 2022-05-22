@@ -59,6 +59,17 @@ public abstract class ComponentManger extends PageManager{
         gbc.insets = new Insets(10,10,10,10);
         grid_panel.add(c, gbc);
     }
+	
+	public void gbinsert(JPanel grid_panel, Component c, int x, int y, int w, int h, Insets inset){
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill= GridBagConstraints.BOTH;
+        gbc.gridx = x;
+        gbc.gridy = y;
+        gbc.gridwidth = w;
+        gbc.gridheight = h;
+        gbc.insets = inset;
+        grid_panel.add(c, gbc);
+    }
     
 	public ImageIcon imageSetSize(String path, int i, int j) { // image Size Setting
 		ImageIcon icon = new ImageIcon(path);

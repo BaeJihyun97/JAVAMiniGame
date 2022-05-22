@@ -66,19 +66,30 @@ public class StartPage extends ComponentManger{
 
 		}
 
-		for (int i = 1; i <= 2; i++) {
-			buttonArr[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					PageManager.page = 2; // 여기가 프레임 전환 역할
-					setvisibility(false);
-				}
-			});
-		}
+		
+		buttonArr[2].addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PageManager.page = 2; // 여기가 프레임 전환 역할
+				PageManager.gameN = 7;
+				setvisibility(false);
+			}
+		});
+		
+		buttonArr[1].addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PageManager.page = 2; // 여기가 프레임 전환 역할
+				PageManager.gameN = 6;
+				setvisibility(false);
+			}
+		});
+		
 		buttonArr[0].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				PageManager.finish = true; // 여기가 프레임 전환 역할
+				PageManager.gameN = 5;
 				setvisibility(false);
 			}
 		});
