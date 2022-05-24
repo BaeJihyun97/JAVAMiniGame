@@ -10,10 +10,8 @@ public class Game1 extends PageManager{
 	final static int TRACK_NUM = 100;
 	Dimension dim = new Dimension(300,300);
 	JPanel main;
-	Runners player = new Runners(TRACK_NUM);
-	Runners com = new Runners(TRACK_NUM);
-	Computer c = new Computer(com);
-	Runners[] r = {com,player};
+	Runners player;
+	Runners com;
 	String[] arrow_img = {"./image/arrowLEFT.png",
 			"./image/arrowUP.png",
 			"./image/arrowRIGHT.png",
@@ -25,7 +23,7 @@ public class Game1 extends PageManager{
 	int[] track = new int[TRACK_NUM];
 	JLabel[] tracks = new JLabel[TRACK_NUM];
 	JPanel[] board = new JPanel[6];
-	int a = 1;
+	int a;
 	boolean isvisible;
 	boolean finish = false;
 	boolean penalty = false;
@@ -39,6 +37,15 @@ public class Game1 extends PageManager{
 		
 		main = new JPanel();
 		main.setBackground(Color.WHITE);
+		add("Center",main);
+	}
+	
+	public void init() {
+		a = 1;
+		player = new Runners(TRACK_NUM);
+		com = new Runners(TRACK_NUM);
+		main.removeAll();
+		main.setLayout(new BorderLayout());
 		
 		JPanel r = new JPanel();
 		r.setBackground(Color.WHITE);
@@ -49,7 +56,8 @@ public class Game1 extends PageManager{
 		ready.setForeground(Color.BLACK);
 		ready.setPreferredSize(new Dimension(800,1080));
 		r.add("Center",ready);
-		main.add(r);
+		main.add("Center",r);
+		main.revalidate();
 		add("Center",main);
 	}
 	
@@ -106,12 +114,10 @@ public class Game1 extends PageManager{
 		main.revalidate();
 		add("Center",main);
 		this.RunGame();
-
-		
-		
 	}
 	
 	public void RunGame() {
+		Computer c = new Computer(com);
 		c.start();
 		addKeyListener(new key());
 	}
