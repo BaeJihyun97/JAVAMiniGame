@@ -10,22 +10,23 @@ public class Game1 extends PageManager{
 	final static int TRACK_NUM = 100;
 	Dimension dim = new Dimension(300,300);
 	JPanel main;
-	Runners player;
-	Runners com;
+	Runners player = new Runners(TRACK_NUM);
+	Runners com = new Runners(TRACK_NUM);
+	Computer c = new Computer(com);
+	Runners[] r = {com,player};
 	String[] arrow_img = {"./image/arrowLEFT.png",
 			"./image/arrowUP.png",
 			"./image/arrowRIGHT.png",
 			"./image/arrowDOWN.png"};
 	String[] track_img = {"./image/run.png",
-			"./image/gofor.png"};
+			"./image/gofor2.png"};
 	JLabel[] labels = new JLabel[4];
 	JPanel[] pc = new JPanel[2];
 	int[] track = new int[TRACK_NUM];
 	JLabel[] tracks = new JLabel[TRACK_NUM];
 	JPanel[] board = new JPanel[6];
-	int a;
+	int a = 1;
 	boolean isvisible;
-	boolean finish = false;
 	boolean penalty = false;
 	
 	public Game1() {
@@ -37,15 +38,6 @@ public class Game1 extends PageManager{
 		
 		main = new JPanel();
 		main.setBackground(Color.WHITE);
-		add("Center",main);
-	}
-	
-	public void init() {
-		a = 1;
-		player = new Runners(TRACK_NUM);
-		com = new Runners(TRACK_NUM);
-		main.removeAll();
-		main.setLayout(new BorderLayout());
 		
 		JPanel r = new JPanel();
 		r.setBackground(Color.WHITE);
@@ -56,8 +48,7 @@ public class Game1 extends PageManager{
 		ready.setForeground(Color.BLACK);
 		ready.setPreferredSize(new Dimension(800,1080));
 		r.add("Center",ready);
-		main.add("Center",r);
-		main.revalidate();
+		main.add(r);
 		add("Center",main);
 	}
 	
@@ -76,7 +67,7 @@ public class Game1 extends PageManager{
 			String s = "";
 			pc[i] = new JPanel();
 			pc[i].setLayout(new GridBagLayout());			
-			pc[i].setBackground(Color.WHITE);
+			//pc[i].setBackground(Color.WHITE);
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.fill = GridBagConstraints.BOTH;
 			if(i==0)	s = "COM       ";
@@ -114,10 +105,12 @@ public class Game1 extends PageManager{
 		main.revalidate();
 		add("Center",main);
 		this.RunGame();
+
+		
+		
 	}
 	
 	public void RunGame() {
-		Computer c = new Computer(com);
 		c.start();
 		addKeyListener(new key());
 	}
@@ -132,19 +125,17 @@ public class Game1 extends PageManager{
 		public void keyReleased(KeyEvent e) {				
 			if(e.getKeyCode()==track[player.location]) {
 				if(!(penalty)) {
-				Player_move();
-				slide(board,a);
-				a++;					
-				if(!(player.running)) {
-					JOptionPane.showMessageDialog(null, "Win");
-					finish = true;
-					PageManager.page = 1;
-					setvisibility(false);
+					Player_move();
+					slide(board,a);
+					a++;					
+					if(!(player.running)) {
+						JOptionPane.showMessageDialog(null, "Win");
+						PageManager.page = 1;
+						setvisibility(false);
+					}
 				}
+				else	penalty = false;
 				}
-				else
-					penalty = false;
-			}
 			else {
 				penalty = true;
 			}
@@ -223,7 +214,7 @@ public class Game1 extends PageManager{
 			// TODO Auto-generated method stub
 			while(true) {
 				try {
-					Thread.sleep(300);
+					Thread.sleep(400);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
