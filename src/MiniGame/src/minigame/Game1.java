@@ -28,6 +28,7 @@ public class Game1 extends PageManager{
 	int a = 1;
 	boolean isvisible;
 	boolean finish = false;
+	boolean penalty = false;
 	
 	public Game1() {
 		setTitle("Game1");
@@ -124,6 +125,7 @@ public class Game1 extends PageManager{
 
 		public void keyReleased(KeyEvent e) {				
 			if(e.getKeyCode()==track[player.location]) {
+				if(!(penalty)) {
 				Player_move();
 				slide(board,a);
 				a++;					
@@ -133,9 +135,12 @@ public class Game1 extends PageManager{
 					PageManager.page = 1;
 					setvisibility(false);
 				}
+				}
+				else
+					penalty = false;
 			}
 			else {
-				
+				penalty = true;
 			}
 		}
 			
