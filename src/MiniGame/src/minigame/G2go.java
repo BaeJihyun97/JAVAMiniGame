@@ -18,15 +18,16 @@ public class G2go extends ComponentManger{
 	char ustate = '0'; //1=white, 2=black
 	char turn = '0';
 	int errorN = 0;
-	
-	
-//	JPanel go_grid_panel = new JPanel();
+	boolean win;
+	boolean over;
+
 	JPanel go_grid_panel=new JPanel() {		
 		ImageIcon background = imageSetSize("./image/g2go.png", 800, 800);
 		@Override
 		protected void paintComponent(Graphics g) {
 		    super.paintComponent(g);
 		    g.drawImage(background.getImage(), 0, 0, this); 
+		   
 		}		
 	};
 	
@@ -65,6 +66,7 @@ public class G2go extends ComponentManger{
 				public void actionPerformed(ActionEvent e) {
 					switchbutton(e);
 					sendpackets();
+					System.out.println(stateArr);
 				}
 			});
 	    	stateArr[i] = '0';
@@ -74,28 +76,28 @@ public class G2go extends ComponentManger{
 	   
 	    gbinsert(grid_panel, go_grid_panel, 0, 0, 2, 2);
 	    add("Center", grid_panel);
+	    this.over = false;
 	}
 	
 	void switchbutton(ActionEvent e) {
 		if(this.turn == this.ustate && this.turn != '0'){
 			int i = Integer.parseInt(((JButton)e.getSource()).getText());
 			this.stateArr[i] = this.ustate;
-			updateGo();
+			updateGo(i);
+			if(Winner()) this.over = true; this.win = true; System.out.println("Game Over. You are winner" + (!this.over && !PageManager.over));	
 		}	
 	}
 	
-	void updateGo() {	
-		for(int j=0; j < 361; j++) {
-			String path;
-			if(this.stateArr[j] != '0') {
-				go_grid_panel.remove(gobuttonL[j]);
-				path = (this.stateArr[j]=='1'?"./image/circle_w.png":"./image/circle_b.png");
-				JLabel picLabel = new JLabel( imageSetSize(path, 24, 24) );
-				gbinsert(go_grid_panel, picLabel, (j % 19), (j / 19), 1, 1, new Insets(4, 4, 4, 4));
-				System.out.println(j + " " +this.stateArr[j]);
-			}
-			
-		}
+	void updateGo(int i) {	
+		
+		go_grid_panel.remove(gobuttonL[i]);
+		String path = (this.stateArr[i]=='2'?"./image/circle_b.png":"./image/circle_w.png");
+		
+		System.out.println("i-th: " +i+"["+this.stateArr[i]+"] "+(this.stateArr[i]=='2'));
+		System.out.println(this.stateArr);
+		
+		JLabel picLabel = new JLabel( imageSetSize(path, 24, 24) );
+		gbinsert(go_grid_panel, picLabel, (i % 19), (i / 19), 1, 1, new Insets(9, 9, 9, 9));
 		
 		
 		go_grid_panel.revalidate();
@@ -112,7 +114,16 @@ public class G2go extends ComponentManger{
 			String msg = String.valueOf(this.turn) + String.valueOf(this.ustate) + String.valueOf(stateArr);
 			//System.out.println("Clinet:: turn " + this.turn + " ustate " + this.ustate);
 			//System.out.println(msg);
-			client.sendMessage( msg, PageManager.id, "2003");
+			if(this.over) {
+				client.sendMessage( msg, PageManager.id, "2004");
+				client.sendMessage( msg, PageManager.id, "2004");
+				//implement rest
+			}
+			else {
+				client.sendMessage( msg, PageManager.id, "2003");
+				client.sendMessage( msg, PageManager.id, "2003");
+			}
+			
 		}
 		this.turn = '0';
 	}
@@ -122,33 +133,126 @@ public class G2go extends ComponentManger{
 		//System.out.println("read packet" + " " + PageManager.code + PageManager.code.equals("2001") + msg.equals("start"));
 		if(msg == null) this.errorN += 1;
 		if(PageManager.code.equals("2001") && msg.equals("start")) {
+			this.ustate = PageManager.state;
 			PageManager.page = 6; 
-			System.out.println("user game2 start");
+			System.out.println("user : "+this.ustate+" game2 start");
 			if(this.ustate == '1') this.turn = '1';
 		}
-		if(PageManager.code.equals("2002") && msg.equals("end")) PageManager.page = 1;
-		if(PageManager.code.equals("2003")) {
+		else if(PageManager.code.equals("2002") && msg.equals("end")) PageManager.page = 1;
+		else if(PageManager.code.equals("2003")) {
 			char[] msgstate = msg.toCharArray();
 			this.turn = msgstate[0];
-			System.out.println("Clinet:: turn " + this.turn + " ustate " + this.ustate);
+			//ystem.out.println("Clinet:: turn " + this.turn + " ustate " + this.ustate);
 			for(int i=0; i<361; i++) {
-				this.stateArr[i] = msgstate[i+2];
+				if(this.stateArr[i] != msgstate[i+2]) {
+					this.stateArr[i] = msgstate[i+2];
+					updateGo(i);
+				}
+				
 			}
-			updateGo();
 		}
-		//implement update
-		//implement game check
+		else if(PageManager.code.equals("2004")) {
+			if (!msg.equals(PageManager.id)) {
+				this.win = false;	
+			}
+			else {
+				this.win = true;
+			}
+			this.over = true;
+		}
+	}
+	
+	public boolean Winner() {
+		for (int i=0; i < 361; i++) {
+			int count, j;
+			if(this.stateArr[i] == this.ustate) {
+				//for x axis
+				count = 1; j = i + 1;
+				while(j/19 == i/19 && j >= 0 && j <= 361) {	
+					if(this.stateArr[j] == this.ustate) {count += 1; j += 1;}
+					else break;
+				}
+				j = i -1;
+				while(j/19 == i/19 && j >= 0 && j <= 361) {
+					if(this.stateArr[j] == this.ustate) {count += 1; j -= 1;}
+					else break;
+				}
+				if(count == 5) return true;
+				//for y axis
+				count = 1; j = i + 19;
+				while(j%19 == i%19 && j >= 0 && j <= 361) {	
+					if(this.stateArr[j] == this.ustate) {count += 1; j += 19;}
+					else break;
+				}
+				j = i - 19;
+				while(j%19 == i%19 && j >= 0 && j <= 361) {
+					if(this.stateArr[j] == this.ustate) {count += 1; j -= 19;}
+					else break;
+				}
+				if(count == 5) return true;
+				//for y=x axis
+				count = 1; j = i + 18;
+				while(j >= 0 && j <= 361) {	
+					if(this.stateArr[j] == this.ustate) {count += 1; j += 18;}
+					else break;
+				}
+				j = i - 18;
+				while(j >= 0 && j <= 361) {
+					if(this.stateArr[j] == this.ustate) {count += 1; j -= 18;}
+					else break;
+				}
+				if(count == 5) return true;
+				//for y=-x axis
+				count = 1; j = i + 20;
+				while(j >= 0 && j <= 361) {	
+					if(this.stateArr[j] == this.ustate) {count += 1; j += 20;}
+					else break;
+				}
+				j = i - 20;
+				while(j >= 0 && j <= 361) {
+					if(this.stateArr[j] == this.ustate) {count += 1; j -= 20;}
+					else break;
+				}
+				if(count == 5) return true;
+			}
+		}
+		return false;
+	}
+	
+	public void cleanup() {
+		isvisible = false;
+		ustate = '0'; //1=white, 2=black
+		turn = '0';
+		errorN = 0;
+		over = false;
+		
+		for (int i=0; i < 361; i++) {
+			go_grid_panel.remove(gobuttonL[i]);
+	    	gbinsert(go_grid_panel, gobuttonL[i], (i % 19), (i / 19), 1, 1, new Insets(13, 13, 13, 13));
+	    	stateArr[i] = '0';
+	    }
+		
+		go_grid_panel.revalidate();
+		go_grid_panel.repaint();
 	}
 	
 	public void G2Run() {
 		
-		this.ustate = PageManager.state;
+		
 		System.out.println("user : " + this.ustate + " game2 waiting...");
-		while(!PageManager.over) {
+		while(!this.over && !PageManager.over) {
 			getpackets();
 			if(this.errorN > 10) break;
 		}
-		System.out.println("game over");
+		
+		
+		if (this.win) {
+			JOptionPane.showMessageDialog(null, "You Win");
+		} else {
+			JOptionPane.showMessageDialog(null, "You Lose");
+		}
+		PageManager.over = true;
+		cleanup();
 	}
 	//packet: turn/user/stateArr
 	

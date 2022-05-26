@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.StandardSocketOptions;
 import java.nio.channels.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,6 +28,7 @@ public class Server extends PageManager{
 	int gamestate = 0;
 	int done = 0;
 	String curuser;
+	String winner;
 	
 	public Server() {
 		
@@ -35,6 +37,7 @@ public class Server extends PageManager{
 	public void init(int port) throws IOException{
 		selector = Selector.open();
         serverSocket = ServerSocketChannel.open();
+        serverSocket.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         serverSocket.bind(new InetSocketAddress(port));
         serverSocket.configureBlocking(false);
         serverSocket.register(selector, SelectionKey.OP_ACCEPT);
@@ -42,7 +45,62 @@ public class Server extends PageManager{
         for(int i=0; i < 361; i++) {
         	stateArr[i] = '0';
         }
+        System.out.println("Server running...");
 
+	}
+	
+	public void close() throws IOException {
+		if(this.serverSocket != null && this.serverSocket.isOpen()) {
+
+		    try {
+
+		        this.serverSocket.close();
+
+		    } catch (IOException e) {
+
+		    	System.out.println("Exception while closing server socket");
+		    }
+		}
+
+		try {
+
+		    Iterator<SelectionKey> keys = this.selector.keys().iterator();
+
+		    while(keys.hasNext()) {
+
+		        SelectionKey key = keys.next();
+
+		        SelectableChannel channel = key.channel();
+
+		        if(channel instanceof SocketChannel) {
+
+		            SocketChannel socketChannel = (SocketChannel) channel;
+		            Socket socket = socketChannel.socket();
+		            String remoteHost = socket.getRemoteSocketAddress().toString();
+
+		            System.out.println("closing socket "+ remoteHost);
+
+		            try {
+
+		                socketChannel.close();
+
+		            } catch (IOException e) {
+
+		            	System.out.println("Exception while closing socket");
+		            	e.printStackTrace();
+		            }
+
+		            key.cancel();
+		        }
+		    }
+
+		    System.out.println("closing selector");
+		    selector.close();
+
+		} catch(Exception ex) {
+
+			System.out.println("Exception while closing selector");
+		}
 	}
 	
 	private void answerWithEcho(ByteBuffer buffer, SocketChannel client, String user) throws IOException {
@@ -90,28 +148,35 @@ public class Server extends PageManager{
 		 else if (rlen != 8) {
 			 String response = new String(hbuffer.array()).trim();
 	         System.out.println("Server::Packet Head Corruption response=" + response + " hlen: " + rlen);
-			 throw new IOException("Packet Head Corruption");
+			 //throw new IOException("Packet Head Corruption");
 		 }
-		 this.code = new String(hbuffer.array(), 0, 4);
-		 int len =  Integer.parseInt((new String(hbuffer.array())).substring(4));
-		 
-		 len -= 64;		 
-		 int size = 0;
+		 try {
+			 this.code = new String(hbuffer.array(), 0, 4);
+			 int len =  Integer.parseInt((new String(hbuffer.array())).substring(4));
+			 len -= 64;		 
+			 int size = 0;
 
-		 //read data length	 
-		 while(size < len) {
- 			 if((rlen = client.read(buffer)) == -1) {
-				 throw new IOException("Socket closed");
+			 //read data length	 
+			 while(size < len) {
+	 			 if((rlen = client.read(buffer)) == -1) {
+					 throw new IOException("Socket closed");
+				 }
+				 size += rlen;
 			 }
-			 size += rlen;
+			 
+			 //make read mode
+			 buffer.flip();
+			 int curr = buffer.position();
+			 this.curuser = new String(buffer.array(), curr, curr+64);
+			 String msg = new String(buffer.array(), curr+64, curr+len);
+			 return msg.trim();
 		 }
-		 
-		 //make read mode
-		 buffer.flip();
-		 int curr = buffer.position();
-		 this.curuser = new String(buffer.array(), curr, curr+64);
-		 String msg = new String(buffer.array(), curr+64, curr+len);
-		 return msg.trim();
+		 catch (Exception e){
+			 //System.out.println(new String(buffer.array(), curr+64, curr+len));
+			 e.printStackTrace();
+			 return "";
+		 }
+		  
 	}
 	
 	
@@ -192,21 +257,18 @@ public class Server extends PageManager{
                         			Thread.sleep(100);
                         			writeChunkData(buffer, client, "start", "Server", "2001");
                         			this.done += 1;
-                        			int i = 0;
-                        			//Set<SelectionKey> selectedKeys2 = selector.selectedKeys();
-                                    //Iterator<SelectionKey> iter2 = selectedKeys2.iterator();
                         			iter.remove();
-                        			while(iter.hasNext()) {
-                        				SelectionKey key2 = iter.next();
-                        				System.out.println(i);
-                        				if(key2.isWritable()) {
-                        					SocketChannel clientr = (SocketChannel) key2.channel();
-                            				writeChunkData(buffer, clientr, "start", "Server", "2001");                              				
-                        				}
-                        				iter.remove();
-                        				this.done += 1;
-                        				if (this.done == 2) this.gamestate = 3;
-                        			}
+//                        			while(iter.hasNext()) {
+//                        				SelectionKey key2 = iter.next();
+//                        				System.out.println(i);
+//                        				if(key2.isWritable()) {
+//                        					SocketChannel clientr = (SocketChannel) key2.channel();
+//                            				writeChunkData(buffer, clientr, "start", "Server", "2001");                              				
+//                        				}
+//                        				iter.remove();
+//                        				this.done += 1;
+//                        				if (this.done == 2) this.gamestate = 3;
+//                        			}
                         			this.turn = '1';
                         			System.out.println("Server::game2 start!!");
                         			continue;
@@ -215,11 +277,21 @@ public class Server extends PageManager{
                     		}
                     		else if(user != "" && users.contains(user) && PageManager.connection == 2){ //running on the game
                     			//implement game logic
-                    			System.out.println("System:: code " + this.code + " msg= " +msg);
+                    			//System.out.println("System:: code " + this.code + " msg= " +msg);
                     			if(this.code.equals("2003")) {
                     				updateGo(msg);
                     				//System.out.println("Server::recivedmsg="+msg);
                         			sendGomsg(client, user);
+                    			}
+                    			else if(this.code.equals("2004")) {
+                    				updateGo(msg);
+                    				this.gamestate = 4;
+                    				writeChunkData(buffer, client, user, "Server", "2004");
+                    				this.winner = user;
+                    				client.close();
+                            		iter.remove();                        			
+                        			continue;
+                    				
                     			}
                     		}	
                         	else { //out of connection
@@ -228,7 +300,6 @@ public class Server extends PageManager{
                                 while (iterator.hasNext()) {
                                     System.out.print(iterator.next() + "  ");
                                 }
-                                System.out.println();
                         		writeChunkData(buffer, client, "connection is refused", "Server", "0000");
                         		client.close();
                         		continue;
@@ -247,10 +318,20 @@ public class Server extends PageManager{
                 		if(this.gamestate == 1) {
                 			writeChunkData(buffer, client, "start", "Server", "2001");
                 			this.done += 1;
-            				if (this.done == 2) this.gamestate = 3;
+            				if (this.done == 2) this.gamestate = 3; this.done = 0;
                 		} 
                 		else if(this.gamestate == 3) {
                 			sendGomsg(client, user);
+                		}
+                		else if(this.gamestate == 4) {
+                			writeChunkData(buffer, client, this.winner, "Server", "2004");
+                			this.done += 1;
+                			if (this.done == 2) { 
+                				this.gamestate = 3; 
+                				this.done = 0;
+                				PageManager.over = true;
+                			}
+                			client.close();
                 		}
 	                }
                 	

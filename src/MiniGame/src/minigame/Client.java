@@ -8,8 +8,8 @@ import java.nio.channels.SocketChannel;
 
 @SuppressWarnings("serial")
 public class Client extends PageManager{
-	private static SocketChannel client;
-    private static ByteBuffer buffer;
+	SocketChannel client;
+    ByteBuffer buffer;
     String curuser =new String("");
     //using pageManger.conde
 	
@@ -22,6 +22,10 @@ public class Client extends PageManager{
         client = SocketChannel.open(new InetSocketAddress(ip, port));
         buffer = ByteBuffer.allocate(2048);
         
+	}
+	
+	public void close() throws IOException{
+		this.client.close();
 	}
 
     public void sendMessage(String msg, String user, String code) {

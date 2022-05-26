@@ -8,7 +8,8 @@ public class Main extends PageManager implements Runnable{
 	MakePartyPage page2 = new MakePartyPage();
 	Wait page3 = new Wait();
 	G2go page6 = new G2go(client);
-	
+	Game1 page5 = new Game1();
+	ReadyG1 page51 = new ReadyG1();
 	public Main() {
 		
 	}
@@ -21,12 +22,16 @@ public class Main extends PageManager implements Runnable{
 				System.out.println("new thread for server");
 				this.server.startS();
 				page3.setvisibility(false);
+				this.server.close();
 				System.out.println("close the server");
 			}
 			else if(PageManager.page == 44) {
 				System.out.println("new thread for game2");
 				this.page6.G2Run();
+				this.client.close();
+				System.out.println("game over");
 				this.page6.setvisibility(false);	
+				PageManager.page = 1;
 			}
 			
 		}
@@ -54,20 +59,18 @@ public class Main extends PageManager implements Runnable{
 						main.server.init(PageManager.portS);
 						Thread subTread1 = new Thread(main);
 						subTread1.start();
-						//participate as client too. do not make global memory
-						//implement this
 						
+						Thread.sleep(200);
 						main.client.init("127.0.0.1", PageManager.portS);
-						//check connection number
-						//synchronize data along clients
-						//implement game algorithm.
-						//after game over terminate above thread.
-						main.client.sendMessage("hello", PageManager.id, "0000");	
+						main.client.sendMessage("hello", PageManager.id, "0000");
+						System.out.println("1111");
 						String msg = main.client.receiveMessage().trim();
 						if (msg.contains("connection allowed")) {
+							System.out.println("2222");
 							PageManager.page = 44;
 							Thread subTread2 = new Thread(main);
 							PageManager.state = msg.charAt(msg.length() - 1);
+							System.out.println(PageManager.state);
 							subTread2.start();
 						}
 						else PageManager.page = 2;
@@ -75,7 +78,6 @@ public class Main extends PageManager implements Runnable{
 					else { //client
 						
 						main.client.init(PageManager.ip, PageManager.portC);
-						//have to implement actions
 						main.client.sendMessage("hello", PageManager.id, "0000");						
 						String msg = main.client.receiveMessage().trim();
 						if (msg.contains("connection allowed")) {
@@ -93,8 +95,23 @@ public class Main extends PageManager implements Runnable{
 				}
 				
 			}
+			if(PageManager.page == 5) {
+				main.page51.setvisibility(true);
+				try {
+					Thread.sleep(3000);
+					main.page51.setvisibility(false);
+					main.page5.setvisibility(true);
+					main.page5.Start();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					main.page51.setvisibility(false);
+					PageManager.page = 1;
+				}
+				
+			}
 			
-			//have to implement game2 game3 page
+			
 			if(PageManager.page == 6) {
 				System.out.println("game2");
 				main.page6.setvisibility(true);	
