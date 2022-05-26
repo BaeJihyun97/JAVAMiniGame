@@ -88,7 +88,7 @@ public class StartPage extends ComponentManger{
 		buttonArr[0].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PageManager.finish = true; // 여기가 프레임 전환 역할
+				PageManager.page = 5; // 여기가 프레임 전환 역할
 				PageManager.gameN = 5;
 				setvisibility(false);
 			}
