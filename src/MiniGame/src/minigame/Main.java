@@ -9,6 +9,7 @@ public class Main extends PageManager implements Runnable{
 	Wait page3 = new Wait();
 	G2go page6 = new G2go(client);	
 	static Game1 page5;
+	Game3 page7 = new Game3();
 	
 	public Main() {
 		
@@ -16,7 +17,7 @@ public class Main extends PageManager implements Runnable{
 	
 	@Override
     public void run() {
-		/* ìŠ¤ë ˆë“œ ì‹¤í–‰ì½”ë“œ */
+		/* ½º·¹µå ½ÇÇàÄÚµå */
 		try {
 			if(PageManager.page == 4) {
 				System.out.println("new thread for server");
@@ -106,6 +107,11 @@ public class Main extends PageManager implements Runnable{
 				System.out.println("game2");
 				main.page6.setvisibility(true);	
 				main.page3.setvisibility(false);
+			}
+			
+			if(PageManager.page == 7) {
+				main.page7.setvisibility(true);
+				main.page7.Init();
 			}
 			
 			while(pageN == PageManager.page) {

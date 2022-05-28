@@ -6,11 +6,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
-public class StartPage extends ComponentManger{
+public class StartPage extends PageManager{
 	JPanel main_panel;
 	JButton[] buttonArr = new JButton[3];
 
-	String[] lbArr = { "Îã¨Î¶¨Í∏∞", "Ïò§Î™©", "Ïà†ÎûòÏû°Í∏∞" };
+	String[] lbArr = { "¥ﬁ∏Æ±‚", "ø¿∏Ò", "º˙∑°¿‚±‚" };
 	String[] imgArr = { "./image/run.png", "./image/go.png", "./image/halloween.png" };
 	String[] imgArr2 = { "./image/run2.png", "./image/go2.png", "./image/halloween2.png" };
 	boolean isvisible;
@@ -45,8 +45,10 @@ public class StartPage extends ComponentManger{
 			buttonArr[i].setBorderPainted(false);
 			buttonArr[i].setRolloverEnabled(true);
 			buttonArr[i].setToolTipText("Go Game " + (i + 1));
-
-			JLabel lb1 = new JLabel((i + 1) + "Ïù∏");
+			
+			JLabel lb1;
+			if(i!=2)	lb1 = new JLabel((i + 1) + "¿Œ");
+			else	lb1 = new JLabel((i-1) + "¿Œ");
 			JLabel lb2 = new JLabel(lbArr[i]);
 			lb1.setHorizontalAlignment(SwingConstants.CENTER);
 			lb2.setHorizontalAlignment(SwingConstants.CENTER);
@@ -66,22 +68,31 @@ public class StartPage extends ComponentManger{
 
 		}
 
-		for (int i = 1; i <= 2; i++) {
-			buttonArr[i].addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					PageManager.page = 2; // Ïó¨Í∏∞Í∞Ä ÌîÑÎ†àÏûÑ Ï†ÑÌôò Ïó≠Ìï†
-					setvisibility(false);
-				}
-			});
-		}
-		buttonArr[0].addActionListener(new ActionListener() {
+		
+		buttonArr[1].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PageManager.page = 5; // Ïó¨Í∏∞Í∞Ä ÌîÑÎ†àÏûÑ Ï†ÑÌôò Ïó≠Ìï†
+				PageManager.page = 2; // ø©±‚∞° «¡∑π¿” ¿¸»Ø ø™«“
 				setvisibility(false);
 			}
 		});
+		
+		buttonArr[2].addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PageManager.page = 7; // ø©±‚∞° «¡∑π¿” ¿¸»Ø ø™«“
+				setvisibility(false);
+			}
+		});
+		
+		buttonArr[0].addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PageManager.page = 5; // ø©±‚∞° «¡∑π¿” ¿¸»Ø ø™«“
+				setvisibility(false);
+			}
+		});
+		
 		
 		main_panel.add("Center", grid_panel);
 		add("Center", main_panel);
@@ -89,6 +100,13 @@ public class StartPage extends ComponentManger{
 
 	}
 
+	public ImageIcon imageSetSize(String path, int i, int j) { // image Size Setting
+		ImageIcon icon = new ImageIcon(path);
+		Image ximg = icon.getImage(); // ImageIcon¿ª Image∑Œ ∫Ø»Ø.
+		Image yimg = ximg.getScaledInstance(i, j, java.awt.Image.SCALE_SMOOTH);
+		ImageIcon xyimg = new ImageIcon(yimg);
+		return xyimg;
+	}
 	
 	public void setvisibility(boolean isvisible) {
     	this.isvisible = isvisible;

@@ -354,15 +354,43 @@ public class Game3 extends ComponentManger {
 			board[y][x].revalidate();
 			board[y][x].repaint();
 			ghost.vanished = false;
-			if(ghost.angry==0)	g.restTime = 700;
-			else	g.restTime = 250;
+			if(ghost.angry==0)	g.restTime = 600;
+			else	g.restTime = 150;
 			
 			if(ghost.getX()==player.getX() && ghost.getY()==player.getY()) {
 				finish = true;
 				removeKeyListener(keyboard);
-				ghost.angry = 0;
+				if(ghost.angry >= 2) {			
+					JLabel hiddenghost = new JLabel(imageSetSize("./image/hiddenghost.jpg",990,990));
+					main.removeAll();
+					main.setLayout(new GridLayout(1,0,0,0));
+					main.add(hiddenghost);
+					main.revalidate();
+					main.repaint();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				if(ghost.angry == 0) {			
+					JLabel realghost = new JLabel(imageSetSize("./image/realghost.jfif",990,990));
+					main.removeAll();
+					main.setLayout(new GridLayout(1,0,0,0));
+					main.add(realghost);
+					main.revalidate();
+					main.repaint();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				JOptionPane.showMessageDialog(null, "Lose: escape failed");
 				G3_board[door.getY()][door.getX()] = 0;
+				ghost.angry = 0;
 				Reset();				
 				PageManager.page = 1;
 				setvisibility(false);
@@ -384,6 +412,7 @@ public class Game3 extends ComponentManger {
 	
 	public void Reset() {
 		this.main.removeAll();
+		this.main.setLayout(new GridLayout(15,15,5,0));
 		for(int i=0; i<15; i++) {
 			for(int j=0; j<15; j++) {
 				this.board[i][j].removeAll();
