@@ -46,7 +46,8 @@ public class StartPage extends ComponentManger{
 			buttonArr[i].setRolloverEnabled(true);
 			buttonArr[i].setToolTipText("Go Game " + (i + 1));
 
-			JLabel lb1 = new JLabel((i + 1) + "인");
+			if(i!=2)	lb1 = new JLabel((i + 1) + "인");
+			else	lb1 = new JLabel((i-1) + "인");
 			JLabel lb2 = new JLabel(lbArr[i]);
 			lb1.setHorizontalAlignment(SwingConstants.CENTER);
 			lb2.setHorizontalAlignment(SwingConstants.CENTER);
