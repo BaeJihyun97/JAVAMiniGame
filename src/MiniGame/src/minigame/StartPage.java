@@ -46,8 +46,7 @@ public class StartPage extends ComponentManger{
 			buttonArr[i].setRolloverEnabled(true);
 			buttonArr[i].setToolTipText("Go Game " + (i + 1));
 
-			if(i!=2)	lb1 = new JLabel((i + 1) + "인");
-			else	lb1 = new JLabel((i-1) + "인");
+			JLabel lb1 = new JLabel((i + 1) + "인");
 			JLabel lb2 = new JLabel(lbArr[i]);
 			lb1.setHorizontalAlignment(SwingConstants.CENTER);
 			lb2.setHorizontalAlignment(SwingConstants.CENTER);
@@ -71,7 +70,7 @@ public class StartPage extends ComponentManger{
 		buttonArr[2].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PageManager.page = 2; // 여기가 프레임 전환 역할
+				PageManager.page = 7; // 여기가 프레임 전환 역할
 				PageManager.gameN = 7;
 				setvisibility(false);
 			}
