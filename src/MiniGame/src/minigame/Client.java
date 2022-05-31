@@ -28,11 +28,11 @@ public class Client extends PageManager{
 		this.client.close();
 	}
 
-    public void sendMessage(String msg, String user, String code) {
+	public void sendMessage(String msg, String user, String code) {
         //buffer = ByteBuffer.wrap(msg.getBytes());
         try {
             writeChunkData(buffer, client, msg, user, code);
-            System.out.println("Client:: user=" + user + " sendMessage="+msg);
+            //System.out.println("Client:: user=" + user + " sendMessage="+msg);
             buffer.clear();
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,7 +46,7 @@ public class Client extends PageManager{
             while((response = readChunkData(buffer, client)) == "") {
             	Thread.sleep(500);
             }
-            System.out.println("Client::receiveMessage=" + response);
+            //System.out.println("Client::receiveMessage=" + response);
             buffer.clear();
         } catch (Exception e) {
             e.printStackTrace();
