@@ -31,7 +31,7 @@ public class G2go extends ComponentManger{
 		}		
 	};
 	
-	static int pi;
+	//static int pi;
 	
 	
 	public G2go(Client client) {
@@ -226,14 +226,16 @@ public class G2go extends ComponentManger{
 		errorN = 0;
 		over = false;
 		
+		go_grid_panel.removeAll();
 		for (int i=0; i < 361; i++) {
-			go_grid_panel.remove(gobuttonL[i]);
 	    	gbinsert(go_grid_panel, gobuttonL[i], (i % 19), (i / 19), 1, 1, new Insets(13, 13, 13, 13));
 	    	stateArr[i] = '0';
 	    }
 		
 		go_grid_panel.revalidate();
 		go_grid_panel.repaint();
+		PageManager.over = false;
+		PageManager.connection = 0;
 	}
 	
 	public void G2Run() {
