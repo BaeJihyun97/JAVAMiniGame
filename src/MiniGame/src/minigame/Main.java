@@ -3,6 +3,7 @@ package minigame;
 @SuppressWarnings("serial")
 public class Main extends PageManager implements Runnable{
 	Server server = new Server();
+	//Server server;
 	Client client = new Client();
 	StartPage page1 = new StartPage();
 	MakePartyPage page2 = new MakePartyPage();
@@ -21,9 +22,14 @@ public class Main extends PageManager implements Runnable{
 		try {
 			if(PageManager.page == 4) {
 				System.out.println("new thread for server");
+				//this.server = new Server();
+				this.server.init(PageManager.portS);
 				this.server.startS();
+				System.out.println("1");
 				page3.setvisibility(false);
-				this.server.close();
+				System.out.println("2");
+				this.server.closeS();
+				//this.server = null;
 				System.out.println("close the server");
 			}
 			else if(PageManager.page == 44) {
@@ -32,7 +38,6 @@ public class Main extends PageManager implements Runnable{
 				this.client.close();
 				System.out.println("game over");
 				this.page6.setvisibility(false);	
-				PageManager.page = 1;
 			}
 			
 		}
@@ -40,7 +45,7 @@ public class Main extends PageManager implements Runnable{
 			e.printStackTrace();
 			PageManager.page = 2;	
 		}
-		
+		PageManager.page = 1;
     }
 	
 	public static void main(String args[]) {
@@ -57,7 +62,7 @@ public class Main extends PageManager implements Runnable{
 				try {
 					PageManager.page = 4;
 					if(PageManager.ip == "") { //server
-						main.server.init(PageManager.portS);
+						//main.server.init(PageManager.portS);
 						Thread subTread1 = new Thread(main);
 						subTread1.start();
 						
