@@ -49,19 +49,7 @@ public class Server extends PageManager{
 
 	}
 	
-	public void close() throws IOException {
-		if(this.serverSocket != null && this.serverSocket.isOpen()) {
-
-		    try {
-
-		        this.serverSocket.close();
-
-		    } catch (IOException e) {
-
-		    	System.out.println("Exception while closing server socket");
-		    }
-		}
-
+	public void closeS() throws IOException {
 		try {
 
 		    Iterator<SelectionKey> keys = this.selector.keys().iterator();
@@ -100,6 +88,18 @@ public class Server extends PageManager{
 		} catch(Exception ex) {
 
 			System.out.println("Exception while closing selector");
+		}
+		
+		if(this.serverSocket != null && this.serverSocket.isOpen()) {
+
+		    try {
+
+		        this.serverSocket.close();
+
+		    } catch (IOException e) {
+
+		    	System.out.println("Exception while closing server socket");
+		    }
 		}
 	}
 	
@@ -288,6 +288,7 @@ public class Server extends PageManager{
                     				this.gamestate = 4;
                     				writeChunkData(buffer, client, user, "Server", "2004");
                     				this.winner = user;
+                    				this.done += 1;
                     				client.close();
                             		iter.remove();                        			
                         			continue;
@@ -372,6 +373,8 @@ public class Server extends PageManager{
 		}
 		
 		PageManager.page = 1;
+		closeS();
+		System.out.println("Server close.");
 	}
 	
 	
